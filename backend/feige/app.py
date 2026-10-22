@@ -20,6 +20,7 @@ from backend.feige.auth import (
 from backend.feige.database import connect, init_database
 from backend.feige.integrations.mock_douyin import MockDouyinAdapter
 from backend.feige.services.annotations import AnnotationService
+from backend.feige.services.assistant import SuggestionService
 from backend.feige.services.knowledge import KnowledgeService
 from backend.feige.services.read_queries import ReadQueries
 from backend.feige.services.sync import SyncService
@@ -42,10 +43,16 @@ def create_feige_app(
     resolved_db = Path(db_path) if db_path else DEFAULT_DB_PATH
     init_database(resolved_db)
     adapter = MockDouyinAdapter(resolved_db, "demo-webhook-secret")
-    sync_service = SyncService(resolved_db, adapter, "demo-webhook-secret")
     read_queries = ReadQueries(resolved_db)
     annotation_service = AnnotationService(resolved_db)
     knowledge_service = KnowledgeService(resolved_db)
+    suggestion_service = SuggestionService(resolved_db, knowledge_service)
+    sync_service = SyncService(
+        resolved_db,
+        adapter,
+        "demo-webhook-secret",
+        suggestion_service=suggestion_service,
+    )
 
     app = FastAPI(title="飞鸽只读 AI 辅助中台", version="1.0.0")
     app.state.db_path = resolved_db
@@ -117,6 +124,7 @@ def create_feige_app(
             sync_service,
             annotation_service,
             knowledge_service,
+            suggestion_service,
             session_secret,
         )
     )

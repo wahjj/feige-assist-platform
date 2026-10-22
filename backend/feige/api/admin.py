@@ -4,7 +4,9 @@ from fastapi import APIRouter, Depends, Request
 
 from backend.feige.auth import require_admin as _require_admin
 from backend.feige.auth import require_csrf
+from backend.feige.database import connect
 from backend.feige.services.annotations import AnnotationService
+from backend.feige.services.assistant import SuggestionService
 from backend.feige.services.knowledge import KnowledgeService
 from backend.feige.services.read_queries import ReadQueries
 from backend.feige.services.sync import SyncService
@@ -15,6 +17,7 @@ def build_admin_router(
     sync_service: SyncService,
     annotation_service: AnnotationService,
     knowledge_service: KnowledgeService,
+    suggestion_service: SuggestionService,
     session_secret: str,
 ) -> APIRouter:
     router = APIRouter(prefix="/api")
@@ -107,5 +110,74 @@ def build_admin_router(
     @router.delete("/knowledge/{entry_id}", status_code=204)
     def delete_knowledge(entry_id: str, _: Admin, __: Csrf) -> None:
         knowledge_service.delete(entry_id)
+
+    @router.post("/conversations/{conversation_id}/suggestions")
+    def generate_suggestion(
+        conversation_id: str,
+        _: Admin,
+        __: Csrf,
+    ) -> dict:
+        return suggestion_service.generate(
+            conversation_id,
+            trigger="manual",
+        ).model_dump(mode="json")
+
+    @router.post("/suggestions/{suggestion_id}/copy")
+    def copy_suggestion(
+        suggestion_id: str,
+        _: Admin,
+        __: Csrf,
+    ) -> dict:
+        return suggestion_service.track_copy(suggestion_id)
+
+    @router.get("/settings/model")
+    def get_model_settings(_: Admin) -> dict:
+        with connect(read_queries.db_path) as connection:
+            settings = {
+                row["key"]: row["value"]
+                for row in connection.execute(
+                    """
+                    SELECT key, value FROM app_settings
+                    WHERE key IN ('model_base_url', 'model_name', 'model_api_key')
+                    """
+                )
+            }
+        key = settings.get("model_api_key", "")
+        return {
+            "base_url": settings.get("model_base_url", ""),
+            "model_name": settings.get("model_name", ""),
+            "api_key_masked": f"••••••••{key[-4:]}" if key else "尚未配置",
+            "configured": bool(
+                settings.get("model_base_url")
+                and settings.get("model_name")
+                and key
+            ),
+        }
+
+    @router.put("/settings/model")
+    def update_model_settings(
+        payload: dict,
+        _: Admin,
+        __: Csrf,
+    ) -> dict[str, bool]:
+        values = {
+            "model_base_url": payload.get("base_url", "").strip(),
+            "model_name": payload.get("model_name", "").strip(),
+        }
+        if payload.get("api_key", "").strip():
+            values["model_api_key"] = payload["api_key"].strip()
+        with connect(read_queries.db_path) as connection:
+            connection.executemany(
+                """
+                INSERT INTO app_settings(key, value) VALUES (?, ?)
+                ON CONFLICT(key) DO UPDATE SET value = excluded.value
+                """,
+                values.items(),
+            )
+        return {"ok": True}
+
+    @router.post("/settings/model/test")
+    def test_model_settings(_: Admin, __: Csrf) -> dict:
+        return suggestion_service.test_connection()
 
     return router

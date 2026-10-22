@@ -599,7 +599,7 @@ def seed_demo(connection: sqlite3.Connection) -> None:
         created_suggestion = (now - timedelta(hours=2)).isoformat()
         connection.execute(
             """
-            INSERT INTO suggestions VALUES (?, ?, ?, ?, 'success', ?, '[]', 'automatic', ?, 1, ?)
+            INSERT INTO suggestions VALUES (?, ?, ?, ?, 'success', ?, '[]', 'manual', ?, 1, ?)
             """,
             (
                 suggestion_id,
