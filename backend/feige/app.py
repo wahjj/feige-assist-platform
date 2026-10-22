@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from backend.feige.api.admin import build_admin_router
+from backend.feige.api.integration import build_integration_router
 from backend.feige.auth import (
     CSRF_COOKIE,
     SESSION_COOKIE,
@@ -131,6 +132,7 @@ def create_feige_app(
             session_secret,
         )
     )
+    app.include_router(build_integration_router(sync_service))
 
     if (FRONTEND_DIST / "assets").exists():
         app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")

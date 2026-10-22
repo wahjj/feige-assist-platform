@@ -116,7 +116,7 @@ class MockDouyinAdapter:
         raw_body: bytes,
         headers: Mapping[str, str],
     ) -> bool:
-        supplied = headers.get("X-Signature", "")
+        supplied = headers.get("X-Signature") or headers.get("x-signature", "")
         expected = hmac.new(
             self.webhook_secret.encode(),
             raw_body,
