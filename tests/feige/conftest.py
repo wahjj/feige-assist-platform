@@ -61,3 +61,27 @@ class SyncContext:
 @pytest.fixture
 def sync_context(tmp_path):
     return SyncContext(tmp_path)
+
+
+@pytest.fixture
+def app(tmp_path):
+    from backend.feige.app import create_feige_app
+
+    return create_feige_app(
+        db_path=tmp_path / "feige-api.db",
+        session_secret="test-secret",
+    )
+
+
+@pytest.fixture
+def admin_client(app):
+    from fastapi.testclient import TestClient
+
+    with TestClient(app) as client:
+        response = client.post(
+            "/api/auth/login",
+            json={"username": "admin", "password": "admin123"},
+        )
+        assert response.status_code == 200
+        client.headers.update({"X-CSRF-Token": client.cookies["csrf_token"]})
+        yield client
