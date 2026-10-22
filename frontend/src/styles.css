@@ -1118,6 +1118,90 @@ h3 {
   line-height: 1.6;
 }
 
+.source-freshness {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #8e9690;
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+.source-freshness i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #7fa08b;
+}
+
+.knowledge-state {
+  display: inline-flex;
+  padding: 4px 7px;
+  border-radius: 5px;
+  color: #94836d;
+  background: #f3eee5;
+  font-size: 8px;
+}
+
+.knowledge-state.bound {
+  color: #54735f;
+  background: #e9f0ea;
+}
+
+.sku-expanded-row td {
+  padding-top: 0;
+  background: #fafaf7;
+}
+
+.sku-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 5px 0 14px;
+}
+
+.sku-chip {
+  min-width: 130px;
+  padding: 10px 11px;
+  border: 1px solid #e4e7e0;
+  border-radius: 9px;
+  background: #fff;
+}
+
+.sku-chip span,
+.sku-chip strong,
+.sku-chip small {
+  display: block;
+}
+
+.sku-chip span {
+  color: #647068;
+  font-size: 9px;
+}
+
+.sku-chip strong {
+  margin-top: 5px;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.sku-chip small {
+  margin-top: 3px;
+  color: #999f9b;
+  font-size: 7px;
+}
+
+.readonly-drawer-note {
+  margin-top: 15px;
+  padding: 11px;
+  border-radius: 8px;
+  color: #78847d;
+  background: #f3f4f0;
+  font-size: 9px;
+  text-align: center;
+}
+
 .customer-note {
   margin: 10px 0;
   padding: 8px;

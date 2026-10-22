@@ -49,12 +49,12 @@ async function openCustomer(customer) {
 async function saveCustomer() {
   saving.value = true
   try {
-    await put(`/api/customers/${selected.value.id}`, {
+    await put(`/api/customers/${selected.value.id}/annotations`, {
       tags: edit.tags.split(/[、,，]/).map((tag) => tag.trim()).filter(Boolean),
       note: edit.note,
     })
     selected.value = await get(`/api/customers/${selected.value.id}`)
-    notice.value = '客户资料已保存'
+    notice.value = '中台标签和备注已保存'
     await load()
     window.setTimeout(() => (notice.value = ''), 2400)
   } finally {
@@ -63,7 +63,7 @@ async function saveCustomer() {
 }
 
 function openConversation(conversation) {
-  router.push({ name: 'service', query: { c: conversation.id } })
+  router.push({ name: 'conversations', query: { c: conversation.id } })
 }
 
 onMounted(load)
@@ -73,9 +73,9 @@ onMounted(load)
   <div class="page-stack">
     <section class="page-heading">
       <div>
-        <p class="eyebrow dark">CUSTOMERS</p>
-        <h1>客户管理</h1>
-        <p>理解客户偏好，把每一次成交沉淀成长期关系。</p>
+        <p class="eyebrow dark">CUSTOMER MIRROR</p>
+        <h1>客户档案</h1>
+        <p>汇总同步客户、历史订单和会话；基础资料以抖店为准。</p>
       </div>
       <div class="heading-side-note">
         当前客户资产 <strong>{{ money(totalValue) }}</strong>
@@ -83,6 +83,12 @@ onMounted(load)
     </section>
 
     <div v-if="notice" class="toast-success">{{ notice }}</div>
+
+    <div class="readonly-banner">
+      <span class="readonly-mark"><Icon name="customer" :size="17" /></span>
+      <div><strong>客户基础资料只读</strong><p>仅标签和跟进备注可以在中台维护，并明确标注不会回写抖店。</p></div>
+      <span class="source-refresh">本地标注 · 不回写</span>
+    </div>
 
     <section class="customer-layout">
       <article class="panel customer-list-panel">
@@ -136,11 +142,11 @@ onMounted(load)
             <div><strong>{{ money(selected.total_spent_cents) }}</strong><span>累计消费</span></div>
           </div>
           <div class="detail-section">
-            <div class="section-title"><h3>客户标签</h3></div>
+            <div class="section-title"><h3>中台标签</h3><span>仅中台可见</span></div>
             <label class="field"><input v-model="edit.tags" placeholder="用顿号分隔标签" /></label>
           </div>
           <div class="detail-section">
-            <div class="section-title"><h3>内部备注</h3></div>
+            <div class="section-title"><h3>跟进备注</h3><span>不回写抖店</span></div>
             <textarea v-model="edit.note" class="soft-textarea" rows="4" />
             <button class="button button-primary button-small" :disabled="saving" type="button" @click="saveCustomer">
               {{ saving ? '保存中…' : '保存客户资料' }}
