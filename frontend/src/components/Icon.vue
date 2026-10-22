@@ -45,6 +45,9 @@ defineProps({
       <circle cx="12" cy="12" r="3" />
       <path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6 7.2 7.2M16.8 16.8l1.6 1.6M18.4 5.6l-1.6 1.6M7.2 16.8l-1.6 1.6" />
     </template>
+    <template v-else-if="name === 'chart'">
+      <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+    </template>
     <template v-else-if="name === 'search'">
       <circle cx="10.5" cy="10.5" r="6" />
       <path d="m15 15 5 5" />

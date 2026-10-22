@@ -1,15 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import { auth } from './auth'
-import ApprovalsView from './views/ApprovalsView.vue'
+import AnalyticsView from './views/AnalyticsView.vue'
+import ConversationsView from './views/ConversationsView.vue'
 import CustomersView from './views/CustomersView.vue'
-import DashboardView from './views/DashboardView.vue'
+import KnowledgeView from './views/KnowledgeView.vue'
 import LoginView from './views/LoginView.vue'
+import MockEventsView from './views/MockEventsView.vue'
 import OrdersView from './views/OrdersView.vue'
+import OverviewView from './views/OverviewView.vue'
+import PanelPlaceholderView from './views/PanelPlaceholderView.vue'
 import ProductsView from './views/ProductsView.vue'
-import PublicChatView from './views/PublicChatView.vue'
-import ServiceView from './views/ServiceView.vue'
-import SettingsView from './views/SettingsView.vue'
+import SyncSettingsView from './views/SyncSettingsView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -20,19 +22,21 @@ const router = createRouter({
       component: LoginView,
       meta: { public: true, bare: true },
     },
-    {
-      path: '/chat',
-      name: 'public-chat',
-      component: PublicChatView,
-      meta: { public: true, bare: true },
-    },
-    { path: '/', name: 'dashboard', component: DashboardView },
+    { path: '/', name: 'overview', component: OverviewView },
+    { path: '/conversations', name: 'conversations', component: ConversationsView },
     { path: '/products', name: 'products', component: ProductsView },
     { path: '/orders', name: 'orders', component: OrdersView },
     { path: '/customers', name: 'customers', component: CustomersView },
-    { path: '/service', name: 'service', component: ServiceView },
-    { path: '/approvals', name: 'approvals', component: ApprovalsView },
-    { path: '/settings', name: 'settings', component: SettingsView },
+    { path: '/knowledge', name: 'knowledge', component: KnowledgeView },
+    { path: '/analytics', name: 'analytics', component: AnalyticsView },
+    { path: '/sync', name: 'sync', component: SyncSettingsView },
+    { path: '/mock-events', name: 'mock-events', component: MockEventsView },
+    {
+      path: '/panel',
+      name: 'panel',
+      component: PanelPlaceholderView,
+      meta: { bare: true },
+    },
   ],
 })
 
@@ -41,7 +45,7 @@ router.beforeEach((to) => {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
   if (to.name === 'login' && auth.authenticated) {
-    return { name: 'dashboard' }
+    return { name: 'overview' }
   }
   return true
 })

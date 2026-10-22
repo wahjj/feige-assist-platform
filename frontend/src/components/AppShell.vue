@@ -10,13 +10,14 @@ const router = useRouter()
 const menuOpen = ref(false)
 
 const nav = [
-  { name: 'dashboard', label: '概览', icon: 'home' },
-  { name: 'products', label: '商品管理', icon: 'product' },
-  { name: 'orders', label: '订单管理', icon: 'order' },
-  { name: 'customers', label: '客户管理', icon: 'customer' },
-  { name: 'service', label: '客服工作台', icon: 'chat', badge: 2 },
-  { name: 'approvals', label: '售后审批', icon: 'approval', badge: 1 },
-  { name: 'settings', label: '设置', icon: 'settings' },
+  { name: 'overview', label: '概览', icon: 'home' },
+  { name: 'conversations', label: '会话中心', icon: 'chat', badge: 2 },
+  { name: 'products', label: '商品资料', icon: 'product' },
+  { name: 'orders', label: '订单查询', icon: 'order' },
+  { name: 'customers', label: '客户档案', icon: 'customer' },
+  { name: 'knowledge', label: 'AI知识库', icon: 'approval' },
+  { name: 'analytics', label: '业务分析', icon: 'chart' },
+  { name: 'sync', label: '同步与设置', icon: 'settings' },
 ]
 
 const currentLabel = computed(
@@ -44,7 +45,7 @@ async function logout() {
       <div class="store-card">
         <span class="store-dot" />
         <div>
-          <small>当前店铺</small>
+          <small>数据镜像 · 以抖店为准</small>
           <strong>禾光生活研究所</strong>
         </div>
       </div>
@@ -66,8 +67,8 @@ async function logout() {
       <div class="sidebar-note">
         <div class="pulse-dot" />
         <div>
-          <strong>本地演示环境</strong>
-          <span>数据仅保存在此电脑</span>
+          <strong>飞鸽辅助中台</strong>
+          <span>只读同步 · 中台仅提供建议</span>
         </div>
       </div>
     </aside>
@@ -77,13 +78,13 @@ async function logout() {
     <div class="main-area">
       <header class="topbar">
         <div class="topbar-title">
-          <span>禾光商家中心</span>
+          <span>飞鸽辅助中台</span>
           <strong>{{ currentLabel }}</strong>
         </div>
         <div class="topbar-actions">
           <div class="top-search">
             <Icon name="search" :size="18" />
-            <input aria-label="全局搜索" placeholder="搜索订单、客户或商品" />
+            <input aria-label="全局搜索" placeholder="搜索会话、订单、客户或商品" />
             <kbd>⌘ K</kbd>
           </div>
           <button class="icon-button" aria-label="通知">

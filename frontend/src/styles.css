@@ -670,6 +670,147 @@ h3 {
   font-size: 11px;
 }
 
+.readonly-banner {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 15px 18px;
+  border: 1px solid #dfe5db;
+  border-radius: 13px;
+  background: rgba(244, 248, 243, 0.78);
+}
+
+.readonly-mark {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 10px;
+  color: #567261;
+  background: #e2ebe3;
+}
+
+.readonly-banner > div {
+  flex: 1;
+}
+
+.readonly-banner strong {
+  font-size: 11px;
+}
+
+.readonly-banner p {
+  margin: 4px 0 0;
+  color: #7d867f;
+  font-size: 9px;
+}
+
+.source-refresh {
+  color: #8e9690;
+  font-size: 8px;
+}
+
+.conversation-preview.wider {
+  padding: 13px 0;
+}
+
+.assist-kpis {
+  padding: 23px;
+}
+
+.assist-status-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 0;
+  border-bottom: 1px solid #efede7;
+}
+
+.status-orb {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #c5a67a;
+  box-shadow: 0 0 0 5px rgba(197, 166, 122, 0.11);
+}
+
+.status-orb.ready {
+  background: #6f9a7c;
+  box-shadow: 0 0 0 5px rgba(111, 154, 124, 0.11);
+}
+
+.assist-status-row strong,
+.assist-status-row small {
+  display: block;
+}
+
+.assist-status-row strong {
+  font-size: 10px;
+}
+
+.assist-status-row small {
+  margin-top: 3px;
+  color: #969d98;
+  font-size: 8px;
+}
+
+.soft-action.large {
+  margin-top: 18px;
+  padding: 10px;
+}
+
+.placeholder-page {
+  display: grid;
+  min-height: 280px;
+  place-items: center;
+  color: #828a85;
+  font-size: 12px;
+}
+
+.panel-placeholder-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 30px;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(199, 219, 204, 0.8), transparent 30%),
+    #eef0e8;
+}
+
+.panel-placeholder-card {
+  width: min(440px, 100%);
+  padding: 44px;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 25px 80px rgba(31, 49, 39, 0.13);
+  text-align: center;
+}
+
+.panel-placeholder-card .brand-mark {
+  margin: 0 auto 24px;
+}
+
+.panel-placeholder-card h1 {
+  margin-bottom: 14px;
+  color: #26362d;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.panel-placeholder-card > p:not(.eyebrow) {
+  margin-bottom: 25px;
+  color: #7d867f;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.panel-placeholder-card > a {
+  color: #557060;
+  font-size: 10px;
+}
+
 .field {
   display: flex;
   flex-direction: column;

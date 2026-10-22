@@ -15,13 +15,13 @@ const tone = computed(() => {
   if (['待发货', '待付款', 'pending', '待审批'].includes(props.status)) {
     return 'tone-warning'
   }
-  if (['已发货', 'human', '人工处理中'].includes(props.status)) {
+  if (['已发货', 'human', '人工处理中', '接待中'].includes(props.status)) {
     return 'tone-info'
   }
   if (['已取消', 'rejected', '已拒绝', '待人工'].includes(props.status)) {
     return 'tone-danger'
   }
-  return 'tone-neutral'
+  return props.status === '已关闭' ? 'tone-neutral' : 'tone-neutral'
 })
 </script>
 
