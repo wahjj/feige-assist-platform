@@ -97,6 +97,19 @@ class SyncService:
                     self._upsert_product(connection, ProductPayload.model_validate(payload["product"]))
                 elif event_type == "order_changed":
                     self._upsert_order(connection, OrderPayload.model_validate(payload["order"]))
+                elif event_type == "session_state":
+                    connection.execute(
+                        """
+                        UPDATE conversations SET state = ?, updated_at = ?, synced_at = ?
+                        WHERE external_id = ?
+                        """,
+                        (
+                            payload["state"],
+                            utc_now(),
+                            utc_now(),
+                            payload["external_conversation_id"],
+                        ),
+                    )
                 connection.execute(
                     """
                     UPDATE webhook_events SET status = 'processed', processed_at = ?

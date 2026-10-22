@@ -1,4 +1,7 @@
 from typing import Annotated
+import hashlib
+import hmac
+import json
 
 from fastapi import APIRouter, Depends, Request
 
@@ -185,5 +188,32 @@ def build_admin_router(
     @router.get("/analytics")
     def analytics(_: Admin) -> dict:
         return analytics_service.snapshot()
+
+    @router.post("/demo/events")
+    def demo_event(
+        payload: dict,
+        _: Admin,
+        __: Csrf,
+    ) -> dict:
+        event_id = payload.get("external_event_id")
+        if not event_id:
+            from fastapi import HTTPException
+
+            raise HTTPException(status_code=422, detail="external_event_id 必填")
+        body_payload = {**payload, "event_id": event_id}
+        raw_body = json.dumps(body_payload, ensure_ascii=False).encode("utf-8")
+        signature = hmac.new(
+            sync_service.webhook_secret.encode(),
+            raw_body,
+            hashlib.sha256,
+        ).hexdigest()
+        result = sync_service.ingest_webhook(
+            raw_body,
+            {
+                "X-Event-ID": event_id,
+                "X-Signature": signature,
+            },
+        )
+        return result.model_dump(mode="json")
 
     return router

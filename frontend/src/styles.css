@@ -1348,6 +1348,403 @@ h3 {
   }
 }
 
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.analysis-card {
+  padding: 21px;
+}
+
+.bar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  margin-top: 19px;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 82px 1fr 24px;
+  align-items: center;
+  gap: 10px;
+}
+
+.bar-row > span {
+  overflow: hidden;
+  color: #65716a;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bar-row > div {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #eff0eb;
+}
+
+.bar-row > div i {
+  display: block;
+  height: 100%;
+  min-width: 4px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #91ab99, #577662);
+}
+
+.bar-row > strong {
+  color: #53645a;
+  font-family: Georgia, serif;
+  font-size: 11px;
+  font-weight: 500;
+  text-align: right;
+}
+
+.product-bar-list .bar-row {
+  grid-template-columns: 140px 1fr 24px;
+}
+
+.rank-list > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #efede8;
+}
+
+.rank-list > div > span {
+  color: #aab0ac;
+  font-family: Georgia, serif;
+  font-size: 10px;
+}
+
+.rank-list > div > div {
+  flex: 1;
+}
+
+.rank-list strong,
+.rank-list small {
+  display: block;
+}
+
+.rank-list strong {
+  font-size: 9px;
+}
+
+.rank-list small {
+  margin-top: 3px;
+  color: #9ca19d;
+  font-size: 7px;
+}
+
+.rank-list em {
+  color: #61766a;
+  font-size: 8px;
+  font-style: normal;
+}
+
+.after-sales-list > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 0;
+  border-bottom: 1px solid #efede8;
+  color: #6f7973;
+  font-size: 9px;
+}
+
+.after-sales-list strong {
+  color: #495d51;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.sync-quality-card {
+  grid-column: span 2;
+}
+
+.quality-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.quality-grid > div {
+  padding: 12px;
+  border-radius: 9px;
+  background: #f4f4ef;
+}
+
+.quality-grid span,
+.quality-grid strong {
+  display: block;
+}
+
+.quality-grid span {
+  color: #959c97;
+  font-size: 8px;
+}
+
+.quality-grid strong {
+  margin-top: 4px;
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.sync-quality-card > p {
+  margin: 13px 0 0;
+  color: #8e9690;
+  font-size: 8px;
+}
+
+.sync-hero {
+  display: grid;
+  grid-template-columns: 1.2fr auto;
+  gap: 18px;
+  padding: 22px;
+}
+
+.sync-shop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sync-shop h2 {
+  margin: 3px 0;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.sync-shop p {
+  margin: 0;
+  color: #929995;
+  font-size: 8px;
+}
+
+.connection-pill {
+  display: flex;
+  height: max-content;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 9px;
+  border-radius: 99px;
+  color: #55715e;
+  background: #e9f0ea;
+  font-size: 8px;
+}
+
+.connection-pill i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #6c9878;
+}
+
+.sync-times {
+  display: grid;
+  grid-column: span 2;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.sync-times > div {
+  padding: 11px;
+  border-radius: 9px;
+  background: #f5f4ef;
+}
+
+.sync-times span,
+.sync-times strong {
+  display: block;
+}
+
+.sync-times span {
+  color: #9ba09d;
+  font-size: 7px;
+}
+
+.sync-times strong {
+  margin-top: 4px;
+  color: #58675f;
+  font-size: 8px;
+}
+
+.sync-actions {
+  display: flex;
+  grid-column: span 2;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.readonly-settings-grid {
+  margin-top: 16px;
+}
+
+.readonly-rule-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.readonly-rule-list span {
+  padding: 6px 8px;
+  border-radius: 6px;
+  color: #61756a;
+  background: #f0f3ee;
+  font-size: 8px;
+}
+
+.webhook-note {
+  margin: 12px 0 0;
+  color: #939a95;
+  font-size: 8px;
+  line-height: 1.6;
+}
+
+.simulator-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.simulator-form-card,
+.simulator-side {
+  padding: 22px;
+}
+
+.preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 17px 0;
+}
+
+.preset-row button {
+  padding: 7px 10px;
+  border: 1px solid #e1e5de;
+  border-radius: 99px;
+  color: #68766e;
+  background: #f5f7f3;
+  font-size: 8px;
+  cursor: pointer;
+}
+
+.preset-row button:hover {
+  border-color: #9cb0a1;
+  color: #42624f;
+}
+
+.simulator-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.simulator-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.event-result {
+  display: flex;
+  gap: 9px;
+  margin-top: 18px;
+  padding: 13px;
+  border-radius: 10px;
+  color: #53705e;
+  background: #edf3ee;
+}
+
+.event-result.duplicate {
+  color: #8f724e;
+  background: #f5edde;
+}
+
+.event-result.processing_error,
+.event-result.invalid_signature {
+  color: #985f55;
+  background: #f7eae7;
+}
+
+.event-result > span {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.event-result strong {
+  display: block;
+  font-size: 10px;
+}
+
+.event-result p {
+  margin: 4px 0 0;
+  font-size: 8px;
+}
+
+.event-empty {
+  min-height: 200px;
+}
+
+.event-tip {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 9px;
+  background: #f5f4ef;
+}
+
+.event-tip strong {
+  font-size: 9px;
+}
+
+.event-tip p {
+  margin: 4px 0 0;
+  color: #8e9691;
+  font-size: 8px;
+  line-height: 1.6;
+}
+
+@media (max-width: 930px) {
+  .analytics-grid,
+  .simulator-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sync-quality-card {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 680px) {
+  .sync-hero,
+  .simulator-form,
+  .sync-times,
+  .quality-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sync-times,
+  .sync-actions,
+  .sync-shop,
+  .connection-pill {
+    grid-column: span 1;
+  }
+}
+
 .customer-note {
   margin: 10px 0;
   padding: 8px;
