@@ -85,3 +85,24 @@ def admin_client(app):
         assert response.status_code == 200
         client.headers.update({"X-CSRF-Token": client.cookies["csrf_token"]})
         yield client
+
+
+@pytest.fixture
+def knowledge_service(tmp_path):
+    from backend.feige.database import init_database
+    from backend.feige.services.knowledge import KnowledgeService
+
+    db_path = tmp_path / "knowledge.db"
+    init_database(db_path)
+    return KnowledgeService(db_path)
+
+
+@pytest.fixture
+def seeded_ids(tmp_path):
+    db_path = tmp_path / "knowledge.db"
+    init_database(db_path)
+    with connect(db_path) as connection:
+        product = connection.execute(
+            "SELECT id, category FROM products ORDER BY created_at LIMIT 1"
+        ).fetchone()
+    return {"product_id": product["id"], "category": product["category"]}

@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends, Request
 
 from backend.feige.auth import require_admin as _require_admin
 from backend.feige.auth import require_csrf
+from backend.feige.services.annotations import AnnotationService
+from backend.feige.services.knowledge import KnowledgeService
 from backend.feige.services.read_queries import ReadQueries
 from backend.feige.services.sync import SyncService
 
@@ -11,6 +13,8 @@ from backend.feige.services.sync import SyncService
 def build_admin_router(
     read_queries: ReadQueries,
     sync_service: SyncService,
+    annotation_service: AnnotationService,
+    knowledge_service: KnowledgeService,
     session_secret: str,
 ) -> APIRouter:
     router = APIRouter(prefix="/api")
@@ -49,6 +53,20 @@ def build_admin_router(
     def customer(customer_id: str, _: Admin) -> dict:
         return read_queries.customer_detail(customer_id)
 
+    @router.put("/customers/{customer_id}/annotations")
+    def update_annotation(
+        customer_id: str,
+        payload: dict,
+        admin: Admin,
+        __: Csrf,
+    ) -> dict:
+        return annotation_service.update(
+            customer_id,
+            tags=payload.get("tags", []),
+            note=payload.get("note", ""),
+            actor=admin,
+        )
+
     @router.get("/conversations")
     def conversations(_: Admin, state: str = "") -> list[dict]:
         return read_queries.list_conversations(state)
@@ -68,5 +86,26 @@ def build_admin_router(
     @router.post("/integration/pull/orders")
     def pull_orders(_: Admin, __: Csrf) -> dict:
         return sync_service.pull_orders().model_dump()
+
+    @router.get("/knowledge")
+    def knowledge(_: Admin, q: str = "", entry_type: str = "") -> list[dict]:
+        return knowledge_service.list_entries(q, entry_type)
+
+    @router.post("/knowledge", status_code=201)
+    def create_knowledge(_: Admin, __: Csrf, payload: dict) -> dict:
+        return knowledge_service.create(payload)
+
+    @router.put("/knowledge/{entry_id}")
+    def update_knowledge(
+        entry_id: str,
+        payload: dict,
+        _: Admin,
+        __: Csrf,
+    ) -> dict:
+        return knowledge_service.update(entry_id, payload)
+
+    @router.delete("/knowledge/{entry_id}", status_code=204)
+    def delete_knowledge(entry_id: str, _: Admin, __: Csrf) -> None:
+        knowledge_service.delete(entry_id)
 
     return router
