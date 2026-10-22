@@ -1202,6 +1202,152 @@ h3 {
   text-align: center;
 }
 
+.knowledge-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.72fr) minmax(430px, 1.28fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.knowledge-list-panel {
+  overflow: hidden;
+}
+
+.knowledge-list-tools {
+  display: flex;
+  gap: 8px;
+  padding: 13px;
+  border-bottom: 1px solid #efede7;
+}
+
+.knowledge-list-tools .search-box {
+  flex: 1;
+}
+
+.knowledge-list-item {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px 15px;
+  border: 0;
+  border-bottom: 1px solid #f0eee8;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.knowledge-list-item:hover,
+.knowledge-list-item.active {
+  background: #f5f6f2;
+}
+
+.knowledge-list-type {
+  display: grid;
+  width: 33px;
+  height: 33px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 9px;
+  color: #617763;
+  background: #e9efea;
+  font-size: 8px;
+  font-weight: 650;
+}
+
+.knowledge-list-item > span:nth-child(2) {
+  flex: 1;
+}
+
+.knowledge-list-item strong,
+.knowledge-list-item small,
+.knowledge-list-item em {
+  display: block;
+}
+
+.knowledge-list-item strong {
+  font-size: 10px;
+}
+
+.knowledge-list-item small {
+  margin-top: 4px;
+  color: #979d99;
+  font-size: 7px;
+}
+
+.knowledge-list-item em {
+  overflow: hidden;
+  max-width: 120px;
+  color: #a1a6a2;
+  font-size: 7px;
+  font-style: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.knowledge-editor-panel {
+  padding: 22px;
+}
+
+.knowledge-editor-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.knowledge-editor-head h2 {
+  margin: 3px 0 0;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 23px;
+  font-weight: 500;
+}
+
+.toggle-field {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #68766e;
+  font-size: 9px;
+}
+
+.toggle-field input {
+  accent-color: #4f705c;
+}
+
+.knowledge-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.knowledge-editor-note {
+  margin-top: 16px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #7f8982;
+  background: #f5f4ef;
+  font-size: 9px;
+}
+
+.knowledge-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.danger-outline {
+  border-color: #ead8d3;
+  color: #9c685e;
+}
+
+@media (max-width: 930px) {
+  .knowledge-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
 .customer-note {
   margin: 10px 0;
   padding: 8px;
