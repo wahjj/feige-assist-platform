@@ -185,3 +185,32 @@ def configured_sync_context(tmp_path, knowledge_service):
     context = SuggestionContext(tmp_path, valid_suggestion_payload())
     yield context
     context.client.close()
+
+
+@pytest.fixture
+def analytics_context(tmp_path):
+    from types import SimpleNamespace
+    from uuid import uuid4
+
+    from backend.feige.database import connect, init_database
+    from backend.feige.services.analytics import AnalyticsService
+
+    db_path = tmp_path / "analytics.db"
+    init_database(db_path)
+    with connect(db_path) as connection:
+        for event_type in (
+            "suggestion_generated",
+            "suggestion_generated",
+            "suggestion_copied",
+            "suggestion_blocked",
+        ):
+            connection.execute(
+                "INSERT INTO analytics_events VALUES (?, ?, ?, ?)",
+                (
+                    str(uuid4()),
+                    event_type,
+                    "{}",
+                    "2026-10-22T08:00:00+00:00",
+                ),
+            )
+    return SimpleNamespace(service=AnalyticsService(db_path))

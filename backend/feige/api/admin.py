@@ -6,6 +6,7 @@ from backend.feige.auth import require_admin as _require_admin
 from backend.feige.auth import require_csrf
 from backend.feige.database import connect
 from backend.feige.services.annotations import AnnotationService
+from backend.feige.services.analytics import AnalyticsService
 from backend.feige.services.assistant import SuggestionService
 from backend.feige.services.knowledge import KnowledgeService
 from backend.feige.services.read_queries import ReadQueries
@@ -18,6 +19,7 @@ def build_admin_router(
     annotation_service: AnnotationService,
     knowledge_service: KnowledgeService,
     suggestion_service: SuggestionService,
+    analytics_service: AnalyticsService,
     session_secret: str,
 ) -> APIRouter:
     router = APIRouter(prefix="/api")
@@ -179,5 +181,9 @@ def build_admin_router(
     @router.post("/settings/model/test")
     def test_model_settings(_: Admin, __: Csrf) -> dict:
         return suggestion_service.test_connection()
+
+    @router.get("/analytics")
+    def analytics(_: Admin) -> dict:
+        return analytics_service.snapshot()
 
     return router

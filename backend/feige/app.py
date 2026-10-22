@@ -20,6 +20,7 @@ from backend.feige.auth import (
 from backend.feige.database import connect, init_database
 from backend.feige.integrations.mock_douyin import MockDouyinAdapter
 from backend.feige.services.annotations import AnnotationService
+from backend.feige.services.analytics import AnalyticsService
 from backend.feige.services.assistant import SuggestionService
 from backend.feige.services.knowledge import KnowledgeService
 from backend.feige.services.read_queries import ReadQueries
@@ -47,6 +48,7 @@ def create_feige_app(
     annotation_service = AnnotationService(resolved_db)
     knowledge_service = KnowledgeService(resolved_db)
     suggestion_service = SuggestionService(resolved_db, knowledge_service)
+    analytics_service = AnalyticsService(resolved_db)
     sync_service = SyncService(
         resolved_db,
         adapter,
@@ -125,6 +127,7 @@ def create_feige_app(
             annotation_service,
             knowledge_service,
             suggestion_service,
+            analytics_service,
             session_secret,
         )
     )
