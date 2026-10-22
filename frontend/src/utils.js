@@ -1,0 +1,32 @@
+export function money(cents = 0) {
+  return new Intl.NumberFormat('zh-CN', {
+    style: 'currency',
+    currency: 'CNY',
+    minimumFractionDigits: 2,
+  }).format(Number(cents) / 100)
+}
+
+export function shortDate(value) {
+  if (!value) return '—'
+  return new Intl.DateTimeFormat('zh-CN', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(value))
+}
+
+export function fullDate(value) {
+  if (!value) return '—'
+  return new Intl.DateTimeFormat('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(value))
+}
+
+export function initials(name = '') {
+  return name.slice(-2)
+}
