@@ -31,6 +31,7 @@ const router = createRouter({
     { path: '/analytics', name: 'analytics', component: AnalyticsView },
     { path: '/sync', name: 'sync', component: SyncSettingsView },
     { path: '/mock-events', name: 'mock-events', component: MockEventsView },
+    { path: '/chat', redirect: '/mock-events' },
     {
       path: '/panel',
       name: 'panel',

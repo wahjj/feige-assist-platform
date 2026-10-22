@@ -94,7 +94,7 @@ async function submit() {
           <code>admin</code>
           <code>admin123</code>
         </div>
-        <router-link class="customer-link" to="/chat">以消费者身份打开咨询页 →</router-link>
+        <p class="customer-link">飞鸽负责原生接待 · 中台只提供只读镜像与 AI 建议</p>
       </div>
     </section>
   </main>
