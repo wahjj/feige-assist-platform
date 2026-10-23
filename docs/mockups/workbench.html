@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>客服工作台 · 电商客服助手</title>
+<style>
+  :root{
+    --bg:#F2F4F5; --card:#FFFFFF; --line:#E6E9ED; --line-soft:#F0F2F4;
+    --text:#1F2329; --text2:#5C6673; --muted:#98A2AE;
+    --brand:#EA532E; --brand-deep:#D8451F; --brand-soft:#FFF1EC; --brand-line:#FBD3C6;
+    --green:#3E9E63; --green-soft:#EAF7EF;
+    --amber:#B26A00; --amber-soft:#FFF4E0;
+    --cyan:#0F8B8B; --cyan-soft:#E7F7F7;
+    --purple:#6B4EE6; --purple-soft:#F0ECFF;
+    --sidebar:#202936; --sidebar-2:#1A222D; --sidebar-text:#C3CCD8; --sidebar-muted:#7C8798;
+    --r:8px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg); color:var(--text);
+    font:13px/1.55 -apple-system,"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;cursor:pointer}
+  svg{display:block}
+  .ico{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+  /* ============ 侧边栏 ============ */
+  .app{display:flex;min-height:100vh}
+  .sidebar{
+    width:224px;flex:0 0 224px;background:var(--sidebar);color:var(--sidebar-text);
+    display:flex;flex-direction:column;padding:0 10px 12px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;padding:14px 6px 12px}
+  .brand-logo{
+    width:34px;height:34px;border-radius:9px;flex:0 0 34px;
+    background:linear-gradient(145deg,#F86A3F,#E23E14);
+    color:#fff;font-weight:700;font-size:16px;display:grid;place-items:center;
+    box-shadow:0 4px 10px rgba(234,83,46,.32);
+  }
+  .brand-text b{display:block;color:#fff;font-size:13.5px;letter-spacing:.2px}
+  .brand-text span{display:block;color:var(--sidebar-muted);font-size:10.5px;letter-spacing:.3px}
+
+  .store{
+    display:flex;align-items:center;gap:7px;margin:2px 2px 14px;padding:7px 9px;
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:6px;
+    font-size:11.5px;color:#D6DEE8;
+  }
+  .store .dot{width:6px;height:6px;border-radius:50%;background:#4FD07A;box-shadow:0 0 0 3px rgba(79,208,122,.15)}
+
+  .nav-label{font-size:10px;letter-spacing:1.2px;color:var(--sidebar-muted);padding:14px 10px 6px}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:6px;
+    font-size:12.5px;color:var(--sidebar-text);margin-bottom:2px;
+  }
+  .nav-item .ico{color:#8B97A6;flex:0 0 16px}
+  .nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+  .nav-item.active{background:var(--brand);color:#fff;box-shadow:0 4px 12px rgba(234,83,46,.3)}
+  .nav-item.active .ico{color:#fff}
+  .nav-badge{
+    margin-left:auto;min-width:19px;height:18px;padding:0 5px;border-radius:9px;
+    background:rgba(255,255,255,.16);color:#fff;font-size:10.5px;display:grid;place-items:center;
+  }
+  .nav-item:not(.active) .nav-badge{background:rgba(234,83,46,.9)}
+  .nav-sub{margin-left:26px;border-left:1px solid rgba(255,255,255,.08);padding-left:2px}
+  .nav-sub .nav-item{font-size:12px;color:#9FABBA;padding:7px 10px}
+
+  .sidebar-foot{margin-top:auto;padding:10px 8px 2px;border-top:1px solid rgba(255,255,255,.07)}
+  .ai-status{font-size:11px;color:#C9D3DF;line-height:1.5}
+  .ai-status .row{display:flex;align-items:center;gap:6px}
+  .ai-status small{color:var(--sidebar-muted);font-size:10px}
+  .pulse{width:6px;height:6px;border-radius:50%;background:#4FD07A;box-shadow:0 0 0 3px rgba(79,208,122,.15)}
+
+  /* ============ 主区 ============ */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{
+    height:50px;flex:0 0 50px;background:#fff;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;padding:0 18px;
+  }
+  .crumbs{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:7px}
+  .crumbs b{color:var(--text);font-weight:600}
+  .top-right{display:flex;align-items:center;gap:12px}
+  .chip-ghost{
+    font-size:10.5px;color:var(--text2);background:#F6F7F9;border:1px solid var(--line);
+    padding:3px 8px;border-radius:20px;letter-spacing:.3px;
+  }
+  .icon-btn{
+    width:30px;height:30px;border-radius:6px;border:1px solid transparent;background:transparent;
+    color:var(--text2);display:grid;place-items:center;
+  }
+  .icon-btn:hover{background:#F5F6F8}
+  .admin{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2);padding-left:12px;border-left:1px solid var(--line)}
+  .avatar-sm{
+    width:26px;height:26px;border-radius:50%;background:linear-gradient(145deg,#F86A3F,#E23E14);
+    color:#fff;font-size:11px;display:grid;place-items:center;font-weight:600;
+  }
+  .admin .ico{width:12px;height:12px;color:var(--muted)}
+
+  .content{padding:16px 20px 18px;display:flex;flex-direction:column;min-height:0;flex:1}
+  .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
+  .page-head h1{font-size:19px;font-weight:600;letter-spacing:.2px}
+  .page-head .sub{margin-top:4px;font-size:11.5px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+  .page-head .sub b{color:var(--text2);font-weight:600}
+  .head-actions{display:flex;gap:8px;align-items:center}
+
+  .btn{
+    height:32px;padding:0 14px;border-radius:6px;border:1px solid var(--line);background:#fff;
+    color:var(--text2);font-size:12.5px;display:inline-flex;align-items:center;gap:6px;
+  }
+  .btn:hover{background:#FAFBFC}
+  .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 2px 6px rgba(234,83,46,.25)}
+  .btn.primary:hover{background:var(--brand-deep)}
+  .btn.ghost{background:#fff;color:var(--text2)}
+  .btn.sm{height:27px;padding:0 11px;font-size:12px;border-radius:5px}
+  .btn .ico{width:14px;height:14px}
+
+  /* ============ 工作台三栏 ============ */
+  .workbench{
+    flex:1;min-height:600px;
+    display:grid;grid-template-columns:272px minmax(380px,1fr) 300px;gap:12px;align-items:stretch;
+  }
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);min-width:0;display:flex;flex-direction:column;overflow:hidden}
+
+  /* 队列 */
+  .queue-head{padding:10px 10px 8px;border-bottom:1px solid var(--line-soft)}
+  .tabs{display:flex;gap:4px;margin-bottom:8px}
+  .tab{
+    flex:1;border:0;background:transparent;color:var(--text2);font-size:11px;padding:5px 2px;border-radius:5px;
+    display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;
+  }
+  .tab b{font-weight:600}
+  .tab.active{background:var(--brand-soft);color:var(--brand);font-weight:600}
+  .tab.active b{color:var(--brand)}
+  .qsearch{position:relative}
+  .qsearch .ico{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:13px;height:13px;color:var(--muted)}
+  .qsearch input{
+    width:100%;height:30px;border:1px solid var(--line);background:#FAFBFC;border-radius:6px;
+    padding:0 10px 0 28px;font-size:12px;color:var(--text);outline:none;
+  }
+  .qsearch input::placeholder{color:var(--muted)}
+  .qsearch input:focus{border-color:var(--brand-line);background:#fff}
+
+  .queue-list{flex:1;overflow:auto;padding:4px}
+  .q-item{
+    display:flex;gap:9px;padding:9px 8px;border-radius:6px;position:relative;border-left:3px solid transparent;
+  }
+  .q-item:hover{background:#FAFBFC}
+  .q-item.active{background:var(--brand-soft);border-left-color:var(--brand)}
+  .avatar{
+    width:34px;height:34px;flex:0 0 34px;border-radius:8px;color:#fff;font-size:13px;font-weight:600;
+    display:grid;place-items:center;letter-spacing:.5px;
+  }
+  .av1{background:linear-gradient(145deg,#7BC96F,#3E9E63)}
+  .av2{background:linear-gradient(145deg,#6FA8FF,#3B6FE0)}
+  .av3{background:linear-gradient(145deg,#FFB36B,#EE7B2E)}
+  .av4{background:linear-gradient(145deg,#B08CFF,#6B4EE6)}
+  .av5{background:linear-gradient(145deg,#5FD0C7,#0F8B8B)}
+  .q-main{min-width:0;flex:1}
+  .q-top{display:flex;justify-content:space-between;gap:6px;align-items:baseline}
+  .q-name{font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .q-time{font-size:10px;color:var(--muted);flex:0 0 auto}
+  .q-prev{
+    margin-top:2px;font-size:11.5px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .q-tags{display:flex;gap:4px;align-items:center;margin-top:5px;flex-wrap:wrap}
+  .unread{
+    position:absolute;right:8px;bottom:8px;min-width:16px;height:16px;border-radius:8px;background:var(--brand);
+    color:#fff;font-size:9.5px;display:grid;place-items:center;padding:0 4px;
+  }
+  .queue-foot{border-top:1px solid var(--line-soft);padding:8px 10px;font-size:10.5px;color:var(--muted);display:flex;justify-content:space-between}
+
+  .pill{
+    display:inline-flex;align-items:center;gap:3px;height:17px;padding:0 6px;border-radius:4px;
+    font-size:10px;line-height:1;white-space:nowrap;font-weight:500;
+  }
+  .pill-red{background:var(--brand);color:#fff}
+  .pill-soft-red{background:var(--brand-soft);color:var(--brand)}
+  .pill-green{background:var(--green-soft);color:var(--green)}
+  .pill-cyan{background:var(--cyan-soft);color:var(--cyan)}
+  .pill-amber{background:var(--amber-soft);color:var(--amber)}
+  .pill-purple{background:var(--purple-soft);color:var(--purple)}
+  .pill-gray{background:#F2F4F6;color:#6B7684}
+
+  /* 聊天 */
+  .chat-head{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line-soft)}
+  .chat-title{display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600}
+  .chat-sub{font-size:10.5px;color:var(--muted);margin-top:2px}
+  .chat-actions{margin-left:auto;display:flex;gap:6px}
+  .notice{
+    display:flex;align-items:center;gap:6px;padding:6px 14px;background:#FFFBF2;
+    border-bottom:1px solid #F6E7C8;color:#8A6116;font-size:10.5px;
+  }
+  .notice .ico{width:12px;height:12px;flex:0 0 12px}
+
+  .stream{flex:1;overflow:auto;padding:14px 16px;background:linear-gradient(#FCFDFD,#F8FAFB);min-height:260px}
+  .daydiv{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:10px;margin:2px 0 14px}
+  .daydiv:before,.daydiv:after{content:"";height:1px;background:var(--line);flex:1}
+  .msg{display:flex;gap:8px;margin-bottom:14px;align-items:flex-start}
+  .msg .avatar{width:28px;height:28px;flex:0 0 28px;border-radius:7px;font-size:11px}
+  .msg-body{max-width:min(78%,520px);min-width:0}
+  .msg-meta{font-size:10px;color:var(--muted);margin-bottom:4px;display:flex;align-items:center;gap:5px}
+  .bubble{
+    padding:8px 11px;border-radius:8px;font-size:12.5px;line-height:1.62;color:var(--text);
+    background:#fff;border:1px solid var(--line);border-top-left-radius:2px;
+  }
+  .msg.out{flex-direction:row-reverse}
+  .msg.out .msg-body{display:flex;flex-direction:column;align-items:flex-end}
+  .msg.out .bubble{background:var(--brand-soft);border-color:var(--brand-line);border-top-left-radius:8px;border-top-right-radius:2px}
+  .msg.out.human .bubble{background:var(--brand);border-color:var(--brand);color:#fff}
+  .msg.out.human .msg-meta{flex-direction:row-reverse}
+  .sysline{
+    margin:0 0 14px;text-align:center;font-size:10.5px;color:var(--muted);
+  }
+  .sysline span{background:#F1F4F6;border-radius:20px;padding:3px 10px;display:inline-block}
+
+  .ai-card{
+    margin-top:7px;background:#fff;border:1px solid var(--brand-line);border-radius:7px;overflow:hidden;
+    max-width:520px;
+  }
+  .ai-card-head{
+    display:flex;align-items:center;gap:6px;padding:6px 9px;background:var(--brand-soft);
+    font-size:10px;color:var(--brand);font-weight:600;letter-spacing:.2px;
+  }
+  .ai-card-body{padding:8px 9px;display:grid;gap:5px;font-size:11px;color:var(--text2)}
+  .ai-row{display:flex;gap:8px}
+  .ai-row dt{flex:0 0 60px;color:var(--muted)}
+  .ai-row dd{flex:1;min-width:0;color:var(--text)}
+  .mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:10.5px}
+
+  .composer{border-top:1px solid var(--line);padding:9px 12px 11px;background:#fff}
+  .quick{display:flex;gap:6px;margin-bottom:7px;flex-wrap:wrap}
+  .quick button{
+    border:1px solid var(--line);background:#FAFBFC;color:var(--text2);border-radius:20px;
+    font-size:11px;padding:3px 9px;
+  }
+  .quick button:hover{border-color:var(--brand-line);color:var(--brand);background:var(--brand-soft)}
+  .compose-row{display:flex;gap:8px;align-items:flex-end}
+  .compose-row textarea{
+    flex:1;resize:none;height:58px;border:1px solid var(--line);border-radius:6px;padding:8px 10px;
+    font:12.5px/1.6 inherit;color:var(--text);outline:none;background:#FAFBFC;
+  }
+  .compose-row textarea:focus{border-color:var(--brand-line);background:#fff}
+  .compose-foot{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:10px;color:var(--muted)}
+
+  /* 右栏 */
+  .side-stack{display:flex;flex-direction:column;gap:12px;min-height:0}
+  .side-card{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+  .side-head{
+    display:flex;align-items:center;justify-content:space-between;padding:9px 12px;
+    border-bottom:1px solid var(--line-soft);font-size:12px;font-weight:600;
+  }
+  .side-head .link{font-size:10.5px;color:var(--brand);font-weight:400}
+  .side-body{padding:11px 12px}
+  .cust{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+  .cust .avatar{width:36px;height:36px;flex-basis:36px}
+  .cust-name{font-size:13px;font-weight:600}
+  .cust-sub{font-size:10.5px;color:var(--muted);margin-top:1px}
+  .tagrow{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line-soft);border-radius:6px;overflow:hidden}
+  .stat{padding:7px 4px;text-align:center;background:#FCFDFD;border-right:1px solid var(--line-soft)}
+  .stat:last-child{border-right:0}
+  .stat b{display:block;font-size:13px;color:var(--text)}
+  .stat span{font-size:10px;color:var(--muted)}
+  .note{
+    margin-top:10px;font-size:10.5px;color:var(--text2);background:#FAFBFC;border:1px dashed var(--line);
+    border-radius:6px;padding:7px 8px;line-height:1.6;
+  }
+  .note b{color:var(--text);font-weight:600}
+
+  .kv{display:grid;gap:6px;font-size:11.5px}
+  .kv div{display:flex;justify-content:space-between;gap:10px}
+  .kv dt{color:var(--muted);flex:0 0 auto}
+  .kv dd{color:var(--text);text-align:right;min-width:0}
+  .kv dd.strong{font-weight:600}
+  .price{color:var(--brand);font-weight:600}
+  .hr{height:1px;background:var(--line-soft);margin:9px 0}
+
+  .approve{background:#FFFBF3;border:1px solid #F4E3C3;border-radius:6px;padding:9px 10px}
+  .approve-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .approve-amt{font-size:16px;font-weight:600;color:var(--brand)}
+  .approve-txt{font-size:10.5px;color:#7A6327;line-height:1.65}
+  .approve-actions{display:flex;gap:6px;margin-top:9px}
+  .approve-actions .btn{flex:1;justify-content:center}
+  .guard{display:flex;gap:6px;align-items:flex-start;margin-top:8px;font-size:10px;color:var(--muted);line-height:1.55}
+  .guard .ico{width:12px;height:12px;flex:0 0 12px;color:#C08A2A;margin-top:1px}
+
+  .foot-note{font-size:9.8px;color:var(--muted);text-align:center;line-height:1.6;padding:2px 4px}
+
+  @media (max-width:1180px){
+    .workbench{grid-template-columns:250px minmax(340px,1fr)}
+    .side-stack{grid-column:1 / -1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media (max-width:900px){
+    .sidebar{display:none}
+    .workbench{grid-template-columns:1fr}
+    .side-stack{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-8 8H8l-4 3v-5.2A8 8 0 1 1 21 12Z"/><path d="M8.5 11h7M8.5 14.5h4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.5-3 7.5-7 9.5-4-2-7-5-7-9.5V6l7-3Z"/><path d="M9 12l2 2 4-4.5"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8.5 12 3 3 8.5v7L12 21l9-5.5v-7Z"/><path d="M3 8.5 12 14l9-5.5M12 14v7"/></symbol>
+  <symbol id="i-order" viewBox="0 0 24 24"><path d="M7 3h10a1 1 0 0 1 1 1v17l-3-2-3 2-3-2-3 2V4a1 1 0 0 1 1-1Z"/><path d="M9.5 8h5M9.5 11.5h5"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M2.8 20c0-3.2 2.8-5.2 6.2-5.2s6.2 2 6.2 5.2"/><path d="M16.5 5.4a3 3 0 0 1 0 5.6M18 14.6c2.2.6 3.6 2.2 3.6 5.4"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.1"/><path d="M12 2.8v2.4M12 18.8v2.4M4.6 7.2l2.1 1.2M17.3 15.6l2.1 1.2M4.6 16.8l2.1-1.2M17.3 8.4l2.1-1.2"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.2 4.2"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 15.5V11a6 6 0 1 0-12 0v4.5L4.5 18h15L18 15.5Z"/><path d="M10 21h4"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 4l9 16H3l9-16Z"/><path d="M12 10v4M12 17.2v.1"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3 3 10.5l7 2.5 2.5 7L21 3Z"/><path d="M10 13 21 3"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10" width="15" height="10" rx="2"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 5 13h5l-1 9 8-11h-5l1-9Z"/></symbol>
+</svg>
+
+<div class="app">
+  <!-- ================= 侧边栏 ================= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">客</div>
+      <div class="brand-text"><b>电商客服助手</b><span>商户后台 · 单商家版</span></div>
+    </div>
+    <div class="store"><span class="dot"></span>鲜享生活旗舰店</div>
+
+    <nav>
+      <div class="nav-label">客服中心</div>
+      <a class="nav-item active" href="#"><svg class="ico"><use href="#i-chat"/></svg>客服工作台<span class="nav-badge">6</span></a>
+      <a class="nav-item" href="#"><svg class="ico"><use href="#i-shield"/></svg>售后审批<span class="nav-badge">2</span></a>
+
+      <div class="nav-label">店铺数据</div>
+      <a class="nav-item" href="#"><svg class="ico"><use href="#i-box"/></svg>商品管理</a>
+      <a class="nav-item" href="#"><svg class="ico"><use href="#i-order"/></svg>订单管理</a>
+      <a class="nav-item" href="#"><svg class="ico"><use href="#i-users"/></svg>客户管理</a>
+
+      <div class="nav-label">系统</div>
+      <a class="nav-item" href="#"><svg class="ico"><use href="#i-gear"/></svg>设置</a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="ai-status">
+        <div class="row"><span class="pulse"></span>大模型已连接</div>
+        <small>deepseek-chat · 超时 20s</small>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= 主区 ================= -->
+  <div class="main">
+    <header class="topbar">
+      <div class="crumbs">客服中心 <span>／</span> <b>客服工作台</b></div>
+      <div class="top-right">
+        <span class="chip-ghost">纯服务端渲染 · 零 JavaScript</span>
+        <button class="icon-btn" title="通知"><svg class="ico"><use href="#i-bell"/></svg></button>
+        <div class="admin"><span class="avatar-sm">管</span>超级管理员<svg class="ico"><use href="#i-chev"/></svg></div>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="page-head">
+        <div>
+          <h1>客服工作台</h1>
+          <div class="sub">
+            <span>待处理 <b>6</b></span><span>·</span>
+            <span>AI 处理中 <b>12</b></span><span>·</span>
+            <span>待人工 <b>3</b></span><span>·</span>
+            <span>今日 AI 自动解决 <b>42</b></span><span>·</span>
+            <span>待审批 <b>2</b></span>
+          </div>
+        </div>
+        <div class="head-actions">
+          <button class="btn ghost"><svg class="ico"><use href="#i-refresh"/></svg>刷新消息</button>
+          <button class="btn primary"><svg class="ico"><use href="#i-plus"/></svg>发起售后审批</button>
+        </div>
+      </div>
+
+      <div class="workbench">
+        <!-- ---------- 左：会话队列 ---------- -->
+        <section class="card queue">
+          <div class="queue-head">
+            <div class="tabs">
+              <button class="tab active">待处理 <b>6</b></button>
+              <button class="tab">AI <b>12</b></button>
+              <button class="tab">待人工 <b>3</b></button>
+              <button class="tab">已结束</button>
+            </div>
+            <form class="qsearch" method="get" action="#">
+              <svg class="ico"><use href="#i-search"/></svg>
+              <input name="q" placeholder="客户 / 手机号 / 订单号" autocomplete="off">
+            </form>
+          </div>
+
+          <div class="queue-list">
+            <a class="q-item active" href="#">
+              <div class="avatar av1">林</div>
+              <div class="q-main">
+                <div class="q-top"><span class="q-name">林小满</span><span class="q-time">14:32</span></div>
+                <div class="q-prev">葡萄收到有两串压坏了，能补发吗？</div>
+                <div class="q-tags"><span class="pill pill-amber">待人工</span><span class="pill pill-cyan">#SP…1008</span></div>
+              </div>
+              <span class="unread">2</span>
+            </a>
+
+            <a class="q-item" href="#">
+              <div class="avatar av2">周</div>
+              <div class="q-main">
+                <div class="q-top"><span class="q-name">周雨桐</span><span class="q-time">14:21</span></div>
+                <div class="q-prev">AI：您的订单已发出，预计明天送达～</div>
+                <div class="q-tags"><span class="pill pill-cyan">AI 处理中</span><span class="pill pill-green">已自动回复</span></div>
+              </div>
+            </a>
+
+            <a class="q-item" href="#">
+              <div class="avatar av3">陈</div>
+              <div class="q-main">
+                <div class="q-top"><span class="q-name">陈嘉禾</span><span class="q-time">14:08</span></div>
+                <div class="q-prev">申请退款 ¥128.00，理由是「不想要了」</div>
+                <div class="q-tags"><span class="pill pill-soft-red">待审批</span><span class="pill pill-gray">退款</span></div>
+              </div>
+              <span class="unread">1</span>
+            </a>
+
+            <a class="q-item" href="#">
+              <div class="avatar av4">吴</div>
+              <div class="q-main">
+                <div class="q-top"><span class="q-name">吴一诺</span><span class="q-time">13:56</span></div>
+                <div class="q-prev">牛腩什么时候补货？想囤两份</div>
+                <div class="q-tags"><span class="pill pill-cyan">AI 处理中</span></div>
+              </div>
+            </a>
+
+            <a class="q-item" href="#">
+              <div class="avatar av5">郑</div>
+              <div class="q-main">
+                <div class="q-top"><span class="q-name">郑明轩</span><span class="q-time">13:40</span></div>
+                <div class="q-prev">已经收到了，谢谢！下次还买</div>
+                <div class="q-tags"><span class="pill pill-gray">已结束</span></div>
+              </div>
+            </a>
+
+            <a class="q-item" href="#">
+              <div class="avatar av2">许</div>
+              <div class="q-main">
+                <div class="q-top"><span class="q-name">许清和</span><span class="q-time">13:12</span></div>
+                <div class="q-prev">发错货了，我要的是无糖那款</div>
+                <div class="q-tags"><span class="pill pill-amber">待人工</span><span class="pill pill-red">高风险</span></div>
+              </div>
+              <span class="unread">3</span>
+            </a>
+          </div>
+
+          <div class="queue-foot"><span>共 21 个会话</span><span>1 / 2 页</span></div>
+        </section>
+
+        <!-- ---------- 中：聊天 ---------- -->
+        <section class="card chat">
+          <div class="chat-head">
+            <div class="avatar av1">林</div>
+            <div>
+              <div class="chat-title">林小满 <span class="pill pill-amber">人工处理中</span></div>
+              <div class="chat-sub">138****6621 · 平台消息 · 会话 #C-1042 · 已接管 3 分钟</div>
+            </div>
+            <div class="chat-actions">
+              <button class="btn sm ghost"><svg class="ico"><use href="#i-shield"/></svg>结束会话</button>
+            </div>
+          </div>
+
+          <div class="notice">
+            <svg class="ico"><use href="#i-lock"/></svg>
+            AI 自动回复已关闭 · 管理员 张晨 已接管 · 新消息不会自动出现，请点「刷新消息」或从左侧队列重新进入
+          </div>
+
+          <div class="stream">
+            <div class="daydiv">今天 14:18</div>
+
+            <div class="msg">
+              <div class="avatar av1">林</div>
+              <div class="msg-body">
+                <div class="msg-meta">林小满 · 14:18</div>
+                <div class="bubble">你好，我昨天下的单，葡萄收到了，有两串压坏了，这个能补发吗？</div>
+              </div>
+            </div>
+
+            <div class="msg out">
+              <div class="avatar av5" style="background:linear-gradient(145deg,#FF8A5C,#E2441C)">AI</div>
+              <div class="msg-body">
+                <div class="msg-meta"><span class="pill pill-soft-red">AI 自动回复</span>0.9s · trace 7f3a…</div>
+                <div class="bubble">非常抱歉给您带来不好的体验 🙏 我已查到订单 SP20261021008（阳光玫瑰葡萄 2斤 ×2），已发货、顺丰派送中。坏果属于售后范围，我先为您登记补发/补偿，稍后由人工客服确认，可以吗？</div>
+                <div class="ai-card">
+                  <div class="ai-card-head"><svg class="ico" style="width:12px;height:12px"><use href="#i-bolt"/></svg>模型结构化输出（已通过校验）</div>
+                  <div class="ai-card-body">
+                    <div class="ai-row"><dt>意图</dt><dd>售后 · 坏果补偿 <span class="pill pill-green">0.91</span></dd></div>
+                    <div class="ai-row"><dt>工具调用</dt><dd class="mono">get_order · get_logistics</dd></div>
+                    <div class="ai-row"><dt>策略命中</dt><dd>生鲜破损 → 建议补偿 ¥8.00（需审批）</dd></div>
+                    <div class="ai-row"><dt>转人工</dt><dd>是 · 涉及资金动作</dd></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="msg">
+              <div class="avatar av1">林</div>
+              <div class="msg-body">
+                <div class="msg-meta">林小满 · 14:24</div>
+                <div class="bubble">可以，补发吧，别再压坏了就行。</div>
+              </div>
+            </div>
+
+            <div class="sysline"><span>系统：检测到「补发」诉求，已生成审批单 AP-2087（待处理）· 审批前不会执行任何售后动作</span></div>
+
+            <div class="msg out human">
+              <div class="avatar av5" style="background:linear-gradient(145deg,#F86A3F,#E23E14)">张</div>
+              <div class="msg-body">
+                <div class="msg-meta">张晨 · 人工 · 14:31</div>
+                <div class="bubble">您好，我是客服张晨。已经看到您的情况，补发申请我已提交审批，今天 18:00 前会安排出库，新单号会用短信发您。给您添麻烦了。</div>
+              </div>
+            </div>
+
+            <div class="msg">
+              <div class="avatar av1">林</div>
+              <div class="msg-body">
+                <div class="msg-meta">林小满 · 14:32</div>
+                <div class="bubble">好的，那我等短信。</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="composer">
+            <div class="quick">
+              <button type="button">物流进度</button>
+              <button type="button">补发安排</button>
+              <button type="button">补偿方案</button>
+              <button type="button">申请售后审批</button>
+            </div>
+            <form method="post" action="#">
+              <div class="compose-row">
+                <textarea name="content" placeholder="输入回复内容…（提交后服务器重新渲染本页）"></textarea>
+                <button class="btn primary" type="submit" style="height:58px;padding:0 16px"><svg class="ico"><use href="#i-send"/></svg>发送</button>
+              </div>
+              <div class="compose-foot">
+                <span>人工发送会标记为「人工回复」并保留全部 AI 历史消息</span>
+                <span>Ctrl + Enter</span>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- ---------- 右：上下文 ---------- -->
+        <div class="side-stack">
+          <section class="side-card">
+            <div class="side-head">客户摘要 <a class="link" href="#">查看详情</a></div>
+            <div class="side-body">
+              <div class="cust">
+                <div class="avatar av1">林</div>
+                <div>
+                  <div class="cust-name">林小满</div>
+                  <div class="cust-sub">138****6621 · 接口同步</div>
+                </div>
+              </div>
+              <div class="tagrow">
+                <span class="pill pill-purple">高复购</span>
+                <span class="pill pill-cyan">生鲜敏感</span>
+                <span class="pill pill-gray">本地标签</span>
+              </div>
+              <div class="stats">
+                <div class="stat"><b>4</b><span>订单数</span></div>
+                <div class="stat"><b>¥386.80</b><span>累计消费</span></div>
+                <div class="stat"><b>1</b><span>售后中</span></div>
+              </div>
+              <div class="note"><b>本地备注：</b>偏好次日达，介意压伤；上次补偿过一次运费。</div>
+            </div>
+          </section>
+
+          <section class="side-card">
+            <div class="side-head">关联订单 <a class="link" href="#">全部订单</a></div>
+            <div class="side-body">
+              <dl class="kv">
+                <div><dt>订单号</dt><dd class="mono">SP20261021008</dd></div>
+                <div><dt>状态</dt><dd><span class="pill pill-green">已发货</span></dd></div>
+                <div><dt>金额</dt><dd class="price">¥128.00</dd></div>
+                <div><dt>商品</dt><dd>阳光玫瑰葡萄 2斤 ×2</dd></div>
+                <div><dt>物流</dt><dd>顺丰 SF1392 8845</dd></div>
+                <div><dt>进度</dt><dd>派送中 · 预计今日 18:00</dd></div>
+              </dl>
+            </div>
+          </section>
+
+          <section class="side-card">
+            <div class="side-head">售后审批 <span class="pill pill-amber">待处理</span></div>
+            <div class="side-body">
+              <div class="approve">
+                <div class="approve-top"><span class="pill pill-soft-red">补发</span><span class="approve-amt">¥8.00</span></div>
+                <div class="approve-txt">AI 理由：生鲜破损属售后范围，订单在保；历史 4 单无异常，建议补发 1 份并免除运费。</div>
+              </div>
+              <dl class="kv" style="margin-top:9px">
+                <div><dt>审批单</dt><dd class="mono">AP-2087</dd></div>
+                <div><dt>证据</dt><dd>客户描述 · 订单明细 · 物流签收</dd></div>
+              </dl>
+              <div class="approve-actions">
+                <button class="btn sm primary">通过并执行</button>
+                <button class="btn sm ghost">拒绝</button>
+              </div>
+              <div class="guard"><svg class="ico"><use href="#i-warn"/></svg>首版仅调用模拟执行器并记录结果，不产生真实退款或补发。</div>
+            </div>
+          </section>
+
+          <section class="side-card">
+            <div class="side-head">会话信息</div>
+            <div class="side-body">
+              <dl class="kv">
+                <div><dt>会话 ID</dt><dd class="mono">C-1042</dd></div>
+                <div><dt>外部会话</dt><dd class="mono">dy_8823…41</dd></div>
+                <div><dt>开始时间</dt><dd>10-22 14:18</dd></div>
+                <div><dt>已发消息</dt><dd>9 条（AI 2 · 人工 1）</dd></div>
+              </dl>
+            </div>
+          </section>
+
+          <div class="foot-note">静态视觉稿 · 纯 HTML/CSS 无脚本<br>表单以整页重渲染代替前端框架</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,42 +1,245 @@
 @echo off
-setlocal
+chcp 936 >nul 2>&1
+setlocal EnableExtensions
 cd /d "%~dp0"
+title ºÌ¹âÉÌ¼ÒÖĞĞÄ - ±¾µØÑİÊ¾
+
+rem ============================================================
+rem  ºÌ¹âÉÌ¼ÒÖĞĞÄ ±¾µØÑİÊ¾Æô¶¯½Å±¾
+rem  ÓÃ·¨£ºË«»÷ start.bat
+rem         start.bat --check          ½ö¼ì²é»·¾³£¬²»Æô¶¯·şÎñ
+rem         set PORT=8001 && start.bat Ö¸¶¨¶Ë¿Ú
+rem         set NO_BROWSER=1 && start.bat ²»×Ô¶¯´ò¿ªä¯ÀÀÆ÷
+rem  ×¢Òâ£º±¾ÎÄ¼şÎª GBK ±àÂë + CRLF »»ĞĞ£¬ÇëÎğ´æ³É UTF-8£¬
+rem        ·ñÔòÖĞÎÄÌáÊ¾ÔÚ cmd Àï»áÏÔÊ¾ÎªÂÒÂë¡£
+rem ============================================================
+
+set "APP_PORT=8000"
+set "CHECK_ONLY=0"
+if defined PORT set "APP_PORT=%PORT%"
+if /I "%~1"=="--check" set "CHECK_ONLY=1"
 
 echo.
 echo  ==========================================
-echo    ç¦¾å…‰å•†å®¶ä¸­å¿ƒ - æœ¬åœ°æ¼”ç¤º
+echo     ºÌ¹âÉÌ¼ÒÖĞĞÄ - ±¾µØÑİÊ¾
 echo  ==========================================
 echo.
+
+rem ==================== [1/4] ¶Ë¿Ú ====================
+echo [1/4] ¼ì²é¶Ë¿Ú %APP_PORT% ...
+call :port_pid %APP_PORT%
+if not defined PORT_PID goto :port_ready
+
+call :proc_name %PORT_PID%
+echo       ¶Ë¿Ú %APP_PORT% ÒÑ±» %PROC_NAME% (PID %PORT_PID%) Õ¼ÓÃ
+call :is_our_app %APP_PORT%
+if not errorlevel 1 goto :already_running
+
+echo       Õ¼ÓÃ½ø³Ì²»ÊÇ±¾ÑİÊ¾·şÎñ£¬×Ô¶¯Ñ°ÕÒ¿ÕÏĞ¶Ë¿Ú ...
+call :next_free_port
+if not defined APP_PORT (
+  echo  [X] ¶Ë¿Ú 8001-8010 ¾ù±»Õ¼ÓÃ£¬ÇëÏÈÊÍ·Å¶Ë¿Ú£¬»òÓÃ set PORT=xxxx Ö¸¶¨ÆäËû¶Ë¿Ú¡£
+  goto :error
+)
+echo       ÒÑ¸ÄÓÃ¶Ë¿Ú %APP_PORT%
+goto :port_ready
+
+:already_running
+if "%CHECK_ONLY%"=="1" (
+  echo       ±¾ÑİÊ¾·şÎñÒÑÔÚÔËĞĞ£ºhttp://127.0.0.1:%APP_PORT%/login
+  echo  [--check] ÎŞĞèÆô¶¯¡£
+  goto :done
+)
+echo       ±¾ÑİÊ¾·şÎñÒÑÔÚÔËĞĞ£¬Ö±½Ó´ò¿ªä¯ÀÀÆ÷¡£
+start "" "http://127.0.0.1:%APP_PORT%/login"
+goto :done
+
+:port_ready
+
+rem ==================== [2/4] Python ====================
+echo [2/4] ¼ì²é Python »·¾³ ...
+set "PY="
+if exist ".venv\Scripts\python.exe" (
+  ".venv\Scripts\python.exe" -c "import sys;raise SystemExit(0 if sys.version_info[:2]>=(3,11) else 1)" >nul 2>&1
+  if not errorlevel 1 set "PY=.venv\Scripts\python.exe"
+)
+if not defined PY if exist ".venv\Scripts\python.exe" (
+  echo       ÒÑÓĞ .venv ²»¿ÉÓÃ£¨°æ±¾µÍÓÚ 3.11 »òÒÑËğ»µ£©£¬É¾³ıºóÖØ½¨ ...
+  rmdir /s /q ".venv" 2>nul
+)
+
+if not defined PY (
+  for %%v in (3.12 3.11) do (
+    if not defined PY (
+      py -%%v -c "import sys" >nul 2>&1
+      if not errorlevel 1 set "PY=py -%%v"
+    )
+  )
+)
+if not defined PY (
+  for %%d in (
+    "%LOCALAPPDATA%\Programs\Python\Python312\python.exe"
+    "%LOCALAPPDATA%\Programs\Python\Python311\python.exe"
+    "C:\Python312\python.exe"
+    "C:\Python311\python.exe"
+  ) do (
+    if not defined PY if exist %%d set "PY=%%~d"
+  )
+)
+if not defined PY (
+  python -c "import sys" >nul 2>&1
+  if not errorlevel 1 set "PY=python"
+)
+if not defined PY (
+  echo  [X] Î´ÕÒµ½¿ÉÓÃµÄ Python£¬ĞèÒª 3.11 »ò 3.12£º
+  echo      https://www.python.org/downloads/
+  echo      °²×°Ê±Çë¹´Ñ¡ "Add python.exe to PATH"¡£
+  goto :error
+)
+
+%PY% -c "import sys;raise SystemExit(0 if sys.version_info[:2]>=(3,11) else 1)" >nul 2>&1
+if errorlevel 1 (
+  echo  [X] Python °æ±¾µÍÓÚ 3.11£¬±¾ÏîÄ¿ĞèÒª 3.11 »ò 3.12¡£
+  %PY% -V
+  goto :error
+)
 
 if not exist ".venv\Scripts\python.exe" (
-  echo [1/4] æ­£åœ¨åˆ›å»º Python ç¯å¢ƒ...
-  py -3.12 -m venv .venv 2>nul
-  if errorlevel 1 python -m venv .venv
+  echo       ´´½¨ĞéÄâ»·¾³ .venv ...
+  %PY% -m venv .venv
+  if errorlevel 1 (
+    echo  [X] ´´½¨ĞéÄâ»·¾³Ê§°Ü£¬Çë¼ì²é´ÅÅÌÈ¨ÏŞ»ò Python °²×°ÊÇ·ñÍêÕû¡£
+    goto :error
+  )
 )
+set "PY=.venv\Scripts\python.exe"
+for /f "delims=" %%v in ('%PY% -V 2^>^&1') do echo       Ê¹ÓÃ %%v
 
-".venv\Scripts\python.exe" -c "import fastapi, uvicorn" >nul 2>&1
+rem ==================== [3/4] ºó¶ËÒÀÀµ ====================
+echo [3/4] ¼ì²éºó¶ËÒÀÀµ ...
+%PY% -c "import fastapi, uvicorn, httpx" >nul 2>&1
+if not errorlevel 1 goto :deps_ok
+echo       °²×° requirements.txt ...
+rem pip Êä³öÎª UTF-8£¬ÁÙÊ±ÇĞ»»´úÂëÒ³£¬±ÜÃâÖĞÎÄÂ·¾¶ÂÒÂë
+chcp 65001 >nul
+%PY% -m pip install -q --disable-pip-version-check -r requirements.txt
+set "PIP_RC=%errorlevel%"
+chcp 936 >nul
+if not "%PIP_RC%"=="0" (
+  echo  [X] ºó¶ËÒÀÀµ°²×°Ê§°Ü£¬Çë¼ì²éÍøÂç»ò pip Ô´ÅäÖÃ¡£
+  goto :error
+)
+:deps_ok
+echo       ÒÀÀµÒÑ¾ÍĞ÷
+
+rem ==================== [4/4] Ç°¶Ë ====================
+echo [4/4] ¼ì²éÇ°¶Ë»·¾³ ...
+where npm >nul 2>&1
 if errorlevel 1 (
-  echo [2/4] æ­£åœ¨å®‰è£…åç«¯ä¾èµ–...
-  ".venv\Scripts\python.exe" -m pip install -r requirements.txt
-  if errorlevel 1 goto :error
+  echo  [X] Î´ÕÒµ½ npm / Node.js£¬Çë°²×° Node.js 18 »ò¸ü¸ß°æ±¾£º
+  echo      https://nodejs.org/
+  goto :error
 )
 
-if not exist "frontend\node_modules\vue\package.json" (
-  echo [3/4] æ­£åœ¨å®‰è£…å‰ç«¯ä¾èµ–...
-  call npm --prefix frontend install
-  if errorlevel 1 goto :error
+if exist "frontend\node_modules\vue\package.json" goto :fe_deps_ok
+echo       °²×°Ç°¶ËÒÀÀµ£¨Ê×´ÎÔËĞĞ½ÏÂı£©...
+rem npm / vite µÄÊä³öÊÇ UTF-8£¬ÁÙÊ±ÇĞµ½ 65001 ±ÜÃâÖĞÎÄÂÒÂë
+chcp 65001 >nul
+call npm --prefix frontend install
+set "NPM_RC=%errorlevel%"
+chcp 936 >nul
+if not "%NPM_RC%"=="0" (
+  echo  [X] Ç°¶ËÒÀÀµ°²×°Ê§°Ü£»¿É³¢ÊÔ£º
+  echo      npm --prefix frontend install --registry=https://registry.npmmirror.com
+  goto :error
 )
+:fe_deps_ok
 
-echo [4/4] æ­£åœ¨æ„å»ºå¹¶å¯åŠ¨é¡µé¢...
+set "NEED_BUILD=0"
+if not exist "frontend\dist\index.html" set "NEED_BUILD=1"
+if "%NEED_BUILD%"=="1" goto :do_build
+powershell -NoProfile -Command "$d=(Get-Item 'frontend\dist\index.html').LastWriteTime; $n=Get-ChildItem -Recurse -File 'frontend\src','frontend\index.html','frontend\vite.config.js','frontend\package.json' -ErrorAction SilentlyContinue | Where-Object {$_.LastWriteTime -gt $d}; if($n){exit 1}else{exit 0}" >nul 2>&1
+if errorlevel 1 set "NEED_BUILD=1"
+if "%NEED_BUILD%"=="0" goto :build_skip
+
+:do_build
+echo       ¹¹½¨ Vue Ò³Ãæ ...
+chcp 65001 >nul
 call npm --prefix frontend run build
-if errorlevel 1 goto :error
+set "NPM_RC=%errorlevel%"
+chcp 936 >nul
+if not "%NPM_RC%"=="0" (
+  echo  [X] Ç°¶Ë¹¹½¨Ê§°Ü£¬Çë²é¿´ÉÏ·½ Vite Êä³ö¡£
+  goto :error
+)
+goto :build_done
+:build_skip
+echo       ¹¹½¨²úÎïÒÑÊÇ×îĞÂ£¬Ìø¹ı¹¹½¨
+:build_done
 
-start "" powershell -WindowStyle Hidden -Command "Start-Sleep -Seconds 2; Start-Process 'http://127.0.0.1:8000/login'"
-".venv\Scripts\python.exe" -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
-goto :eof
+rem ==================== Æô¶¯ ====================
+echo.
+echo  --------------------------------------------------
+echo   ·ÃÎÊµØÖ·: http://127.0.0.1:%APP_PORT%/login
+echo   ÑİÊ¾ÕËºÅ: admin / admin123
+echo   ×ÉÑ¯ÑİÊ¾: http://127.0.0.1:%APP_PORT%/chat
+echo  --------------------------------------------------
+echo.
+
+if "%CHECK_ONLY%"=="1" (
+  echo  [--check] »·¾³¼ì²éÈ«²¿Í¨¹ı£¬Î´Æô¶¯·şÎñ¡£
+  goto :done
+)
+
+if defined NO_BROWSER goto :no_browser
+start "" powershell -WindowStyle Hidden -Command "Start-Sleep -Seconds 2; Start-Process 'http://127.0.0.1:%APP_PORT%/login'"
+:no_browser
+echo  ÕıÔÚÆô¶¯·şÎñ£¬°´ Ctrl+C Í£Ö¹ ...
+echo.
+"%PY%" -m uvicorn backend.main:app --host 127.0.0.1 --port %APP_PORT%
+echo.
+echo  ·şÎñÒÑÍ£Ö¹¡£
+goto :done
+
+rem ==================== ×Ó¹ı³Ì ====================
+
+:port_pid
+rem %1 = ¶Ë¿Ú£»½á¹ûĞ´Èë PORT_PID£¨Î´Õ¼ÓÃÊ±Îª¿Õ£©
+set "PORT_PID="
+for /f "tokens=5" %%p in ('netstat -ano -p tcp ^| findstr /C:":%~1 " ^| findstr /C:"LISTENING"') do set "PORT_PID=%%p"
+exit /b 0
+
+:proc_name
+rem %1 = PID£»½á¹ûĞ´Èë PROC_NAME
+set "PROC_NAME=Î´Öª½ø³Ì"
+for /f "tokens=1 delims=," %%n in ('tasklist /FI "PID eq %~1" /FO CSV /NH 2^>nul') do set "PROC_NAME=%%~n"
+exit /b 0
+
+:is_our_app
+rem %1 = ¶Ë¿Ú£»ÊÇ±¾ÑİÊ¾·şÎñ£¨½¡¿µ¼ì²é ok£©·µ»Ø 0£¬·ñÔò·µ»Ø 1
+powershell -NoProfile -Command "try{$r=Invoke-RestMethod -Uri 'http://127.0.0.1:%~1/api/health' -TimeoutSec 2; if($r.status -eq 'ok'){exit 0}else{exit 1}}catch{exit 1}" >nul 2>&1
+exit /b %errorlevel%
+
+:next_free_port
+rem ÔÚ 8001-8010 ÖĞÕÒµÚÒ»¸ö¿ÕÏĞ¶Ë¿ÚĞ´Èë APP_PORT£»È«²¿Õ¼ÓÃÔòÖÃ¿Õ
+set "FOUND="
+for /l %%p in (8001,1,8010) do (
+  if not defined FOUND (
+    call :port_pid %%p
+    if not defined PORT_PID set "FOUND=%%p"
+  )
+)
+set "APP_PORT=%FOUND%"
+exit /b 0
 
 :error
 echo.
-echo å¯åŠ¨å¤±è´¥ï¼Œè¯·æ£€æŸ¥ä¸Šæ–¹é”™è¯¯ä¿¡æ¯ã€‚
+echo  Æô¶¯Ê§°Ü£¬Çë¸ù¾İÉÏ·½ÌáÊ¾´¦ÀíºóÖØÊÔ¡£
+echo.
 pause
+endlocal
 exit /b 1
+
+:done
+endlocal
+exit /b 0
